@@ -1,6 +1,7 @@
 package com.br.android_learn.ui.screen
 
-import ads_mobile_sdk.h5
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.br.android_learn.viewModel.BibleViewModel
 
@@ -33,11 +35,19 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
     val loading by viewModel.loading
     val error by viewModel.error
     var inputText by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            // Remover foco do TextField ao clicar fora dele
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() })
+            {
+                focusManager.clearFocus()
+            }
     ) {
         // Campo de pesquisa
         TextField(
@@ -48,6 +58,7 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+        Alignment.Center
 
         Button(
             onClick = {
@@ -55,7 +66,8 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
                     viewModel.fetchVerse(inputText)
                 }
             },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth(),
+            enabled = !loading
         ) {
             Text("Buscar")
         }
@@ -64,7 +76,17 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
 
         // Conteúdo
         when {
-            loading -> CircularProgressIndicator()
+            loading -> {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+//                    Spacer(modifier = Modifier.height(16.dp))
+                    CircularProgressIndicator()
+                }
+            }
+//            loading -> CircularProgressIndicator()
             error != null -> Text(text = "Erro: $error", color = Color.Red)
             verse != null -> {
                 LazyColumn(
@@ -88,3 +110,10 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
         }
     }
 }
+//@Preview(name = "Home-Screen", showSystemUi = true, showBackground = true)
+//@Composable
+//fun BibleVerseScreenPreview() {
+//     BibleVerseScreen(BibleViewModel(RetrofitInstance.api)) }
+//fun BibleViewModel(repository: BibleApiService): BibleViewModel {
+//    return BibleViewModel(repository)
+//}]
