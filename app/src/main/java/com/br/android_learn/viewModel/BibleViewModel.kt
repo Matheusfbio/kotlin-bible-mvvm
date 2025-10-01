@@ -6,18 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.br.android_learn.data.model.BibleVerse
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.State
-import com.br.android_learn.repository.BibleRepository
-import kotlinx.coroutines.flow.StateFlow
+import com.br.android_learn.data.api.BibleApiService
 
-open class BibleViewModel(private val repository: BibleRepository) : ViewModel() {
+open class BibleViewModel(private val repository: BibleApiService) : ViewModel() {
 
     var _verse = mutableStateOf<BibleVerse?>(null)
     val verse: State<BibleVerse?> get() = _verse
 
-    private var _loading = mutableStateOf(false)
+    var _loading = mutableStateOf(false)
     val loading: State<Boolean> get() = _loading
 
-    private var _error = mutableStateOf<String?>(null)
+    var _error = mutableStateOf<String?>(null)
     val error: State<String?> get() = _error
 
     fun fetchVerse(passage: String) {

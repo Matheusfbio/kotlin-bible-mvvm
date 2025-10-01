@@ -1,7 +1,5 @@
 package com.br.android_learn.ui.screen
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.br.android_learn.data.api.RetrofitInstance
 import com.br.android_learn.viewModel.BibleViewModel
 
 @Composable
@@ -42,12 +42,12 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
             .fillMaxSize()
             .padding(16.dp)
             // Remover foco do TextField ao clicar fora dele
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() })
-            {
-                focusManager.clearFocus()
-            }
+//            .clickable(
+//                indication = null,
+//                interactionSource = remember { MutableInteractionSource() })
+//            {
+//                focusManager.clearFocus()
+//            }
     ) {
         // Campo de pesquisa
         TextField(
@@ -110,10 +110,67 @@ fun BibleVerseScreen(viewModel: BibleViewModel) {
         }
     }
 }
-//@Preview(name = "Home-Screen", showSystemUi = true, showBackground = true)
-//@Composable
-//fun BibleVerseScreenPreview() {
-//     BibleVerseScreen(BibleViewModel(RetrofitInstance.api)) }
-//fun BibleViewModel(repository: BibleApiService): BibleViewModel {
-//    return BibleViewModel(repository)
-//}]
+@Preview(name = "Preview - Dados", showBackground = true, showSystemUi = false)
+@Composable
+fun BibleVerseScreenPreviewWithData() {
+    // Fake ViewModel só para o Preview
+    val fakeViewModel = object : BibleViewModel(RetrofitInstance.api) {
+        init {
+            // Preenche manualmente o estado
+            _verse.value = com.br.android_learn.data.model.BibleVerse(
+                reference = "John 3:16, Genesis 1:1", // Exemplo de referência
+                verses = listOf(
+                    com.br.android_learn.data.model.Verse(
+                        book_id = "JHN", // Exemplo de book_id
+                        book_name = "John",
+                        chapter = 3,
+                        verse = 16,
+                        text = "For God so loved the world..."
+                    ),
+                    com.br.android_learn.data.model.Verse(
+                        book_id = "GEN", // Exemplo de book_id
+                        book_name = "Genesis",
+                        chapter = 1,
+                        verse = 1,
+                        text = "In the beginning, God created the heavens and the earth."
+                    )
+                ),
+                text = "For God so loved the world... In the beginning, God created the heavens and the earth." // Exemplo de texto combinado
+            )
+            _loading.value = false
+            _error.value = null
+        }
+    }
+
+    MaterialTheme {
+        BibleVerseScreen(viewModel = fakeViewModel)
+    }
+}
+
+@Preview(name = "Preview - Carregando", showBackground = true, showSystemUi = true)
+@Composable
+fun BibleVerseScreenPreviewLoading() {
+    val fakeViewModel = object : BibleViewModel(RetrofitInstance.api) {
+        init {
+            _loading.value = true
+        }
+    }
+
+    MaterialTheme {
+        BibleVerseScreen(viewModel = fakeViewModel)
+    }
+}
+
+@Preview(name = "Preview - Erro", showBackground = true, showSystemUi = true)
+@Composable
+fun BibleVerseScreenPreviewError() {
+    val fakeViewModel = object : BibleViewModel(RetrofitInstance.api) {
+        init {
+            _error.value = "Falha ao carregar versículo"
+        }
+    }
+
+    MaterialTheme {
+        BibleVerseScreen(viewModel = fakeViewModel)
+    }
+}

@@ -12,8 +12,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val repository = BibleRepository(RetrofitInstance.api)
-        val viewModel = BibleViewModel(repository)
+        val viewModel = BibleViewModel(RetrofitInstance.api)
 
         setContent {
             BibleVerseScreen(viewModel)
